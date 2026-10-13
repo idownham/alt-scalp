@@ -54,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"{g['window_start_utc'][:16]} -> {g['window_end_utc'][11:16]}  {g['league']}  "
                       f"{g['event_ticker']:<28} {g['title']}")
         else:
-            print(format_table(coverage(store)))
+            print(format_table(coverage(store), iso(datetime.now(timezone.utc))))
     finally:
         store.close()
     return 0

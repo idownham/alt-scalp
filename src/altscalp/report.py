@@ -22,6 +22,8 @@ class Coverage:
     league: str
     title: str
     start_utc: str
+    window_start_utc: str
+    window_end_utc: str
     home_ticker: str | None
     snapshots: int
     max_gap_s: float | None  # includes window start -> first and last -> window end
@@ -40,6 +42,14 @@ class Coverage:
             and not self.incentive
             and not self.schedule_changed
         )
+
+    def verdict(self, now_utc: str) -> str:
+        """'upcoming' or 'recording' until the window closes; then CLEAN or not-clean."""
+        if now_utc < self.window_start_utc:
+            return "upcoming"
+        if now_utc < self.window_end_utc:
+            return "recording"
+        return "CLEAN" if self.clean else "not-clean"
 
 
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
@@ -82,6 +92,7 @@ def coverage(store: Store, ended_before_utc: str | None = None) -> list[Coverage
             "SELECT COUNT(*) FROM schedule_changes WHERE event_ticker = ?", (g["event_ticker"],)).fetchone()[0] > 0
         out.append(Coverage(
             event_ticker=g["event_ticker"], league=g["league"], title=g["title"], start_utc=g["start_utc"],
+            window_start_utc=g["window_start_utc"], window_end_utc=g["window_end_utc"],
             home_ticker=home, snapshots=len(times),
             max_gap_s=max_gap_seconds(times, _ns(g["window_start_utc"]), _ns(g["window_end_utc"])),
             trades=trades, trades_note=g["trades_fetched_ns"] and g["trades_note"],
@@ -90,7 +101,7 @@ def coverage(store: Store, ended_before_utc: str | None = None) -> list[Coverage
     return out
 
 
-def format_table(rows: list[Coverage]) -> str:
+def format_table(rows: list[Coverage], now_utc: str) -> str:
     lines = [f"{'start (UTC)':<17} {'lg':<3} {'event':<28} {'snaps':>6} {'maxgap':>7} {'trades':>6}  flags"]
     for c in rows:
         flags = []
@@ -103,7 +114,7 @@ def format_table(rows: list[Coverage]) -> str:
         if c.trades_note is None:
             flags.append("trades-pending")
         gap = "-" if c.max_gap_s is None else f"{c.max_gap_s:.1f}s"
-        flags.insert(0, "CLEAN" if c.clean else "not-clean")
+        flags.insert(0, c.verdict(now_utc))
         lines.append(
             f"{c.start_utc[:16]:<17} {c.league:<3} {c.event_ticker:<28} {c.snapshots:>6} {gap:>7} {c.trades:>6}  "
             + " ".join(flags)
