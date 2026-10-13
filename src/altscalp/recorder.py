@@ -29,6 +29,7 @@ log = logging.getLogger(__name__)
 MARKET_LEAD = timedelta(hours=1)  # load markets this long before a window opens
 TRADES_DELAY = timedelta(minutes=2)  # wait this long after a window closes before fetching trades
 MAX_IDLE_SLEEP = 30.0
+JUMP_THRESHOLD = 30.0  # a loop running this much longer than planned means the machine slept or stalled
 
 
 class Recorder:
@@ -202,9 +203,22 @@ class Recorder:
         self.store.log(self.clock(), "start", f"interval={self.interval}s home_only={self.home_only}")
         try:
             while not stop():
-                self.sleep(self.step())
+                started = self.clock()
+                wait = self.step()
+                self.sleep(wait)
+                self._check_jump(started, wait)
         finally:
             self.store.log(self.clock(), "stop", "recorder stopped")
+
+
+    def _check_jump(self, started_ns: int, planned_wait_s: float) -> None:
+        """Log when one loop took far longer than planned, so a gap's cause is on record."""
+        took = (self.clock() - started_ns) / 1e9
+        overrun = took - planned_wait_s
+        if overrun > JUMP_THRESHOLD:
+            msg = f"loop took {took:.0f}s, planned ~{planned_wait_s:.0f}s (machine asleep or network stalled)"
+            log.warning(msg)
+            self.store.log(self.clock(), "clock_jump", msg)
 
 
 def _bool_to_int(value: bool | None) -> int | None:

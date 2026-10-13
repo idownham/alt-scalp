@@ -68,15 +68,15 @@ def max_gap_seconds(times_ns: list[int], window_start_ns: int, window_end_ns: in
     return max(b - a for a, b in zip(points, points[1:])) / 1e9
 
 
-def coverage(store: Store, ended_before_utc: str | None = None) -> list[Coverage]:
-    """Coverage for every game that has markets loaded (optionally only windows ended before a time)."""
+def coverage(store: Store, now_utc: str | None = None) -> list[Coverage]:
+    """Coverage for every game that has markets loaded.
+
+    With `now_utc`, a window still open is measured only up to now, so the time still
+    to come doesn't show up as a gap.
+    """
     sql = "SELECT * FROM games WHERE markets_loaded_ns IS NOT NULL"
-    args: tuple = ()
-    if ended_before_utc:
-        sql += " AND window_end_utc <= ?"
-        args = (ended_before_utc,)
     out = []
-    for g in store.db.execute(sql + " ORDER BY start_utc", args).fetchall():
+    for g in store.db.execute(sql + " ORDER BY start_utc").fetchall():
         homes = [r[0] for r in store.db.execute(
             "SELECT ticker FROM markets WHERE event_ticker = ? AND is_home = 1", (g["event_ticker"],))]
         home = homes[0] if len(homes) == 1 else None
@@ -88,13 +88,14 @@ def coverage(store: Store, ended_before_utc: str | None = None) -> list[Coverage
         incentive = store.db.execute(
             "SELECT COUNT(*) FROM incentives i JOIN markets m USING (ticker) WHERE m.event_ticker = ?",
             (g["event_ticker"],)).fetchone()[0] > 0
+        measured_until = min(g["window_end_utc"], now_utc) if now_utc else g["window_end_utc"]
         changed = store.db.execute(
             "SELECT COUNT(*) FROM schedule_changes WHERE event_ticker = ?", (g["event_ticker"],)).fetchone()[0] > 0
         out.append(Coverage(
             event_ticker=g["event_ticker"], league=g["league"], title=g["title"], start_utc=g["start_utc"],
             window_start_utc=g["window_start_utc"], window_end_utc=g["window_end_utc"],
             home_ticker=home, snapshots=len(times),
-            max_gap_s=max_gap_seconds(times, _ns(g["window_start_utc"]), _ns(g["window_end_utc"])),
+            max_gap_s=max_gap_seconds(times, _ns(g["window_start_utc"]), _ns(measured_until)),
             trades=trades, trades_note=g["trades_fetched_ns"] and g["trades_note"],
             incentive=incentive, schedule_changed=changed,
         ))

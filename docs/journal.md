@@ -73,3 +73,14 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - Claude wrote the code and tests and ran the smoke test. Known limits: trading pauses aren't detected automatically
   (check by hand); `caffeinate` can't keep a closed-lid laptop on battery awake.
 - *Ian's judgment:* _(to fill in)_
+
+**First test window (2026-10-13, NJ@DET, window 21:30–22:20Z) — not clean**
+- Recorded normally from 21:30:00 to 21:38:24Z. Then the laptop lid was closed on battery (pmset log: 'Clamshell
+  Sleep' at 21:38:22Z), and the Mac slept apart from brief maintenance wakes. Result: 222 snapshots instead of
+  ~1,200, a max gap of 1,209 s, and 9 failed polls (DNS errors / timeouts during the wakes).
+- The trade tape was still complete (1,641 trades fetched afterwards), which confirms the fetch-after-window design.
+- The recorder code behaved correctly: it logged every failure and resumed on each wake. `caffeinate` cannot prevent
+  lid-close sleep on battery.
+- Follow-ups: the recorder now logs a `clock_jump` when a loop overruns by more than 30 s, so the cause of a gap is
+  on record; `status` measures an open window's gap only up to now. Ian chose to move recording to an always-on
+  server (the spec's fallback) before counted recording on Oct 17.

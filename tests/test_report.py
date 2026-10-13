@@ -28,3 +28,15 @@ def test_verdict_waits_for_window_to_close(client, store):
     assert cov.verdict(iso(START - timedelta(minutes=31))) == "upcoming"
     assert cov.verdict(iso(START)) == "recording"
     assert cov.verdict(iso(START + timedelta(minutes=20))) == "not-clean"  # never recorded
+
+
+def test_open_window_gap_measured_only_up_to_now(client, store):
+    clock = Clock(START - timedelta(minutes=30))
+    rec = Recorder(client, store, clock=clock, sleep=lambda s: None)
+    for _ in range(5):
+        rec.step()
+        clock.advance(2.5)
+    [cov] = coverage(store, iso(START - timedelta(minutes=30) + timedelta(seconds=12)))
+    assert cov.max_gap_s <= 2.5
+    [cov] = coverage(store)  # no "now": measured to window end, so the rest of the window is one big gap
+    assert cov.max_gap_s > 1000

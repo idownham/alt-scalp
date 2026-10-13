@@ -139,3 +139,16 @@ def test_gap_over_30s_makes_game_not_clean(client, store):
     [cov] = coverage(store)
     assert cov.max_gap_s > 30
     assert not cov.clean
+
+
+def test_long_sleep_is_logged_as_clock_jump(client, store):
+    clock = Clock(START - timedelta(minutes=10))
+    sleeps = iter([600.0, 0.0])  # the second "sleep" lasts 10 minutes, as if the lid were closed
+
+    def sleep(seconds):
+        clock.advance(next(sleeps, 0.0) or seconds)
+
+    stops = iter([False, False, True])
+    Recorder(client, store, clock=clock, sleep=sleep).run(stop=lambda: next(stops))
+    jumps = [r[0] for r in store.db.execute("SELECT message FROM log WHERE kind = 'clock_jump'")]
+    assert len(jumps) == 1 and "600s" in jumps[0]
