@@ -40,5 +40,6 @@ One entry per working session: date, work, evidence, observation, decision, AI u
   entry. Every factual claim cites a doc page or a live API response from 2026-10-13.
 - Limitations Claude flagged: the 0.07 base coefficient is inferred from the fee-schedule page's ranges, not quoted
   from the PDF; whether the multi-orderbook endpoint is billed per ticker is unknown; the trade-side skew is from one game only.
-- *Ian's judgment:* historical data is out-of-sample only, option (a) → `decisions.md` 2026-10-13. The remaining
-  criteria suggestions are still to be confirmed.
+- *Ian's judgment:* historical data is out-of-sample only, option (a); all other criteria suggestions accepted →
+  pre-registered criteria CONFIRMED in `spec.md` (`decisions.md`, 2026-10-13). Claude used the example values given in
+  the suggestions as the concrete thresholds.

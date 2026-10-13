@@ -43,7 +43,7 @@ Answer these before writing the recorder; record answers with sources in `docs/d
 - How to get each game's scheduled start time reliably from the API.
 
 ### S1 — Recorder
-- Records each target game from **30 min before scheduled start to 10 min after**.
+- Records each target game from **30 min before scheduled start to 20 min after** (scheduled start = milestone `start_date`).
 - Every **2–3 seconds** per game: full order book snapshot (both sides, all available levels).
 - Trades from the public tape for the same window (polled, deduplicated).
 - Stores to SQLite under `data/recordings/` (gitignored). One row per snapshot / trade, with fetch timestamps.
@@ -67,13 +67,31 @@ Per game and per league:
 - Output per game: fills, gross spread captured, fees, adverse-selection loss (price move against position after fill),
   net P&L, max inventory, max drawdown.
 
-## Pre-registered criteria (DRAFT — Ian to confirm before counted recording starts Oct 17)
-- **Enough data:** ≥ 20 clean regular-season games, ≥ 5 per league, each with the full window recorded and no
-  gap > 30 s.
-- **S2 gate:** continue to S3 only if, in the median game, the pre-kickoff spread is ≥ 2¢ **or** genuine mid-price
-  reversals larger than (spread + 2 × maker fee) occur ≥ 3 times in the window. Otherwise stop: the noise isn't tradable.
-- **S3 GO (worth considering live, tiny size):** simulated net P&L after fees is positive in total **and** positive in
-  ≥ 60% of games **and** adverse-selection loss is < 50% of gross spread captured.
+## Pre-registered criteria (CONFIRMED by Ian 2026-10-13 — see `decisions.md`; do not change without a dated entry there first)
+
+**Definitions**
+- **Window:** 30 min before to **20 min after** the scheduled start (milestone `start_date`).
+- **Quoted market:** one market per game, the **home team's** market. Both may be recorded, but analysis and simulation use the home market only.
+- **Maker fee at price P:** 0.0175 · P · (1 − P) per contract, at the actual price (not assumed 50¢).
+- **Genuine mid move:** a change in mid-price whose new value persists ≥ 10 s.
+- **Reversal:** a genuine mid move of ≥ X followed by a genuine move back of ≥ X within 5 min,
+  where X = (spread + 2 × maker fee) at the time of the first move.
+- **Historical data:** out-of-sample only, untouched until S2 on recorded games is complete (`decisions.md`).
+
+**Criteria**
+- **Enough data:** ≥ 20 clean regular-season games, ≥ 5 per league. Clean = full window of book snapshots with no
+  snapshot gap > 30 s (the trade tape is fetched after the window, so it isn't subject to the gap rule), and no
+  postponement, trading pause, or active liquidity incentive on the quoted market.
+- **S2 gate:** continue to S3 only if, in the median game, ≥ 3 reversals occur in the window. Otherwise stop: the
+  noise isn't tradable.
+- **S3 fill rule (decides GO/STOP):** a resting order fills only when the tape shows trades strictly through its price
+  (last in queue). Sensitivity run, reported but not decisive: fill once volume traded at the order's price exceeds the
+  queue ahead (from the last snapshot) plus the order's size.
+- **S3 fees (decides GO/STOP):** each order's fee rounded up to the whole cent. The exact per-fill fee is reported as a sensitivity.
+- **Adverse selection:** mark-out = mid-price move against the position **60 s** after each fill (primary); 10 s and 5 min are secondary, reported only.
+- **S3 GO (worth considering live, tiny size):** total simulated net P&L after fees > 0 **and** positive in ≥ 60% of
+  games (a game with 0 fills counts as not positive) **and** adverse-selection loss < 50% of gross spread captured
+  **and** ≥ 100 simulated round trips in total. A bootstrap 90% CI on total net P&L is reported alongside but isn't a gate.
 - **S3 STOP:** total net P&L ≤ 0, or adverse-selection loss ≥ gross spread captured.
 - **In between:** MARGINAL — next cheapest test is a narrower window or fewer leagues, recorded in `decisions.md` before running.
 
