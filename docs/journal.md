@@ -57,7 +57,8 @@ One entry per working session: date, work, evidence, observation, decision, AI u
   yet; it isn't needed until S3. The recorder stores each series' `fee_type`/`fee_multiplier` alongside its markets.
 - Tests: 33 unit tests plus 1 live test, all passing. Smoke test against the live API on NJ@DET: snapshots stored,
   home market detected correctly, ~150 ms per request, ~2 KB per book.
-- Added a launchd template for auto-restart (not installed yet; Ian's call).
+- Added a launchd agent for auto-restart. Ian approved installing it, and it was installed 2026-10-13 ~15:55 CT.
+  Verified: after `kill -9` the agent restarted within the 30 s throttle and resumed from the database.
 
 **Design choices (consistent with S0 findings and the confirmed criteria)**
 - Schedule from milestones (`start_date`), not market times. NBA games before 2026-10-20 12:00Z are skipped as preseason.
