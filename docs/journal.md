@@ -32,8 +32,9 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - One liquid NHL game had a 1¢ spread (the minimum tick) at scheduled start.
 
 **Decisions**
-- None taken. The suggested changes to the draft criteria are listed in `s0-research.md` for Ian to confirm.
-- Open for Ian: how historical/backfill data is treated (it must be decided before anyone looks at it).
+- Ian: historical data is out-of-sample only (option a).
+- Ian: all other criteria suggestions accepted → criteria CONFIRMED in `spec.md`; window extended to +20 min.
+  Both are logged in `decisions.md`.
 
 **AI use + Ian's judgment**
 - Claude (Opus 5.5, Claude Code) read the docs, ran the read-only API probes, and drafted `s0-research.md` and this
