@@ -1,4 +1,4 @@
-# alt-scalp — Spec
+# alt-scalp (Project Coin Toss) — Spec
 
 *Written 2026-10-13 from the planning chat. Owner: Ian Downham.*
 

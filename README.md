@@ -1,4 +1,4 @@
-# alt-scalp
+# alt-scalp — Project Coin Toss
 
 Research project: can the price noise around kickoff on Kalshi sports markets (NFL, NBA, NHL) be captured
 by quoting both sides as a maker, after fees and adverse selection?

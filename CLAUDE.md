@@ -1,4 +1,4 @@
-# alt-scalp — Kalshi Kickoff Market-Making Research
+# alt-scalp (Project Coin Toss) — Kalshi Kickoff Market-Making Research
 
 ## What this is
 Research into whether the price noise around game start on Kalshi sports markets can be captured by
