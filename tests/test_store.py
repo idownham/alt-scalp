@@ -50,3 +50,12 @@ def test_trades_are_deduplicated(store):
     assert store.save_trades([TRADE, dict(TRADE, trade_id="other")], 2) == 1
     row = store.db.execute("SELECT * FROM trades WHERE trade_id = ?", (TRADE["trade_id"],)).fetchone()
     assert (row["yes_price_e4"], row["count_e2"], row["taker_book_side"]) == (5100, 947, "bid")
+
+
+def test_window_open_between(store):
+    store.upsert_game(_game(), 1)
+    opens = START - timedelta(minutes=30)
+    assert not store.window_open_between(iso(opens - timedelta(minutes=10)), iso(opens - timedelta(minutes=5)))
+    assert store.window_open_between(iso(opens - timedelta(minutes=4)), iso(opens + timedelta(minutes=1)))
+    assert store.window_open_between(iso(START), iso(START + timedelta(minutes=5)))
+    assert not store.window_open_between(iso(START + timedelta(minutes=20)), iso(START + timedelta(minutes=25)))

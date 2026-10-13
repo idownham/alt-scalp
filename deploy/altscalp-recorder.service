@@ -1,0 +1,20 @@
+# The recorder, run by systemd on the cloud server. Installed by deploy/setup.sh.
+# Logs: journalctl -u altscalp-recorder -f
+[Unit]
+Description=alt-scalp recorder (read-only: Kalshi order books + trades around game start)
+After=network-online.target time-sync.target
+Wants=network-online.target
+
+[Service]
+User=altscalp
+WorkingDirectory=/opt/alt-scalp
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/alt-scalp/.venv/bin/altscalp record
+Restart=always
+# Restart fast: every second down is a gap in an open window.
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+# Pulls the latest code from GitHub; run every 15 minutes by altscalp-update.timer.
+# Never restarts the recorder while a game window is open. Logs: journalctl -u altscalp-update
+[Unit]
+Description=alt-scalp: pull latest code, restart recorder if code changed and tests pass
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/alt-scalp/deploy/update.sh

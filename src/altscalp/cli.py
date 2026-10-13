@@ -1,5 +1,5 @@
 """Command line: `altscalp record` (run the recorder), `altscalp status` (coverage per game),
-`altscalp schedule` (upcoming windows).
+`altscalp schedule` (upcoming windows), `altscalp busy` (exit 0 if a window is open or about to open).
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import signal
 import subprocess
 import sys
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from altscalp.kalshi import KalshiClient
@@ -21,6 +21,7 @@ from altscalp.report import coverage, format_table
 from altscalp.store import Store, iso
 
 DEFAULT_DIR = Path("data/recordings")
+BUSY_LEAD = timedelta(minutes=5)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -35,6 +36,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("status", help="recording coverage and clean/not-clean per game")
     sub.add_parser("schedule", help="refresh the schedule and list upcoming windows")
+    sub.add_parser("busy", help="exit 0 if a game window is open or opens within 5 min (used by deploy/update.sh)")
 
     args = parser.parse_args(argv)
     args.dir.mkdir(parents=True, exist_ok=True)
@@ -44,6 +46,9 @@ def main(argv: list[str] | None = None) -> int:
         return _record(args, db)
     store = Store(db)
     try:
+        if args.command == "busy":
+            now = datetime.now(timezone.utc)
+            return 0 if store.window_open_between(iso(now), iso(now + BUSY_LEAD)) else 1
         if args.command == "schedule":
             with KalshiClient() as client:
                 Recorder(client, store).refresh_schedule()

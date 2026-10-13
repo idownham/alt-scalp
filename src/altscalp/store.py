@@ -183,6 +183,12 @@ class Store:
             "SELECT m.ticker FROM markets m JOIN games g USING (event_ticker)"
             " WHERE g.window_start_utc < ? AND g.window_end_utc > ?", (until_utc, now_utc))]
 
+    def window_open_between(self, from_utc: str, to_utc: str) -> bool:
+        """True if any game's window overlaps [from, to)."""
+        return self.db.execute(
+            "SELECT 1 FROM games WHERE window_start_utc < ? AND window_end_utc > ? LIMIT 1", (to_utc, from_utc)
+        ).fetchone() is not None
+
     def next_window_start(self, now_utc: str) -> str | None:
         row = self.db.execute(
             "SELECT MIN(window_start_utc) FROM games WHERE window_start_utc > ?", (now_utc,)
