@@ -23,5 +23,6 @@ python3.12 -m venv .venv && .venv/bin/pip install -e '.[dev]'
   trade tape after the window closes.
 - Everything goes to `data/recordings/recordings.sqlite` (gitignored), and the log goes to
   `data/recordings/recorder.log`. All state is in the database, so a restart just resumes.
-- Auto-restart after a crash or reboot: `scripts/com.idownham.altscalp.recorder.plist` (install steps inside).
+- **Counted recording runs on a cloud server:** see `docs/deploy.md`. On the laptop, auto-restart is
+  `scripts/com.idownham.altscalp.recorder.plist` (install steps inside).
 - Keep the laptop **plugged in with the lid open**. `caffeinate` can't stop sleep when the lid is closed on battery.
