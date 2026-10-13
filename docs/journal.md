@@ -44,3 +44,31 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - *Ian's judgment:* historical data is out-of-sample only, option (a); all other criteria suggestions accepted →
   pre-registered criteria CONFIRMED in `spec.md` (`decisions.md`, 2026-10-13). Claude used the example values given in
   the suggestions as the concrete thresholds.
+
+---
+
+## 2026-10-13 — S1 recorder build
+
+**Work**
+- Built the recorder (`src/altscalp/`): `kalshi.py` (public read-only client), `http.py`, `schedule.py`,
+  `store.py` (SQLite), `recorder.py` (main loop), `report.py` (coverage / clean check), `cli.py`
+  (`altscalp record | status | schedule`).
+- Copied and adapted from alt-arb @ 594878f (`venues/http.py`, `venues/kalshi.py`). The fee model was not copied
+  yet; it isn't needed until S3. The recorder stores each series' `fee_type`/`fee_multiplier` alongside its markets.
+- Tests: 33 unit tests plus 1 live test, all passing. Smoke test against the live API on NJ@DET: snapshots stored,
+  home market detected correctly, ~150 ms per request, ~2 KB per book.
+- Added a launchd template for auto-restart (not installed yet; Ian's call).
+
+**Design choices (consistent with S0 findings and the confirmed criteria)**
+- Schedule from milestones (`start_date`), not market times. NBA games before 2026-10-20 12:00Z are skipped as preseason.
+- One `GET /markets/orderbooks` per tick for the whole slate (≤ 100 tickers). Both teams' markets are recorded;
+  `--home-only` exists in case the multi-book call turns out to be billed per ticker.
+- Trades are fetched once after each window. Games with zero snapshots get no trade fetch, because their tape would
+  be historical data (out-of-sample only, per `decisions.md`).
+- Window is −30/+20 min. A snapshot gap > 30 s, an incentive, or a schedule change makes `status` mark a game not clean.
+- Prices are stored as integer 1/10,000 $, sizes as integer 1/100 contract, and the raw book JSON is kept.
+
+**AI use + Ian's judgment**
+- Claude wrote the code and tests and ran the smoke test. Known limits: trading pauses aren't detected automatically
+  (check by hand); `caffeinate` can't keep a closed-lid laptop on battery awake.
+- *Ian's judgment:* _(to fill in)_

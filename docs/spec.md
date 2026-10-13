@@ -45,7 +45,8 @@ Answer these before writing the recorder; record answers with sources in `docs/d
 ### S1 — Recorder
 - Records each target game from **30 min before scheduled start to 20 min after** (scheduled start = milestone `start_date`).
 - Every **2–3 seconds** per game: full order book snapshot (both sides, all available levels).
-- Trades from the public tape for the same window (polled, deduplicated).
+- Trades from the public tape for the same window, fetched once after the window closes (the tape persists;
+  `docs/s0-research.md` finding 1), deduplicated by `trade_id`.
 - Stores to SQLite under `data/recordings/` (gitignored). One row per snapshot / trade, with fetch timestamps.
 - Runs many games concurrently (a full NFL Sunday slate) well under the rate limit.
 - Keeps the Mac awake while recording (`caffeinate`), logs gaps, survives a crash/restart.

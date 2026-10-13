@@ -9,7 +9,7 @@ Owner: Ian Downham (GitHub: idownham). Part of a graded class project, so accura
 evidence trail matter as much as the result. A well-evidenced "no edge" is a valid outcome.
 
 ## Current stage
-**S0 — Research + recorder build.** Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
+**S1 — Recorder built; test run Oct 15–16, counted recording from Oct 17.** Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
 Update this line when the stage changes.
 
 ## Scope (decided by owner, 2026-10-13)

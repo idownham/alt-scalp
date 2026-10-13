@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  launchd agent: starts the recorder at login and restarts it if it crashes.
+  Install:   cp scripts/com.idownham.altscalp.recorder.plist ~/Library/LaunchAgents/
+             launchctl load ~/Library/LaunchAgents/com.idownham.altscalp.recorder.plist
+  Uninstall: launchctl unload ~/Library/LaunchAgents/com.idownham.altscalp.recorder.plist
+             rm ~/Library/LaunchAgents/com.idownham.altscalp.recorder.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.idownham.altscalp.recorder</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/iandownham/code/alt/alt-scalp</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/iandownham/code/alt/alt-scalp/.venv/bin/altscalp</string>
+        <string>record</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/iandownham/code/alt/alt-scalp/data/recordings/launchd.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/iandownham/code/alt/alt-scalp/data/recordings/launchd.err.log</string>
+</dict>
+</plist>
