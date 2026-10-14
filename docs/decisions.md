@@ -103,3 +103,14 @@ just in mirror image. The rule should treat them the same. This makes the gate s
 
 **Disclosure:** Claude raised this gap while implementing rule 8 (same session, 2026-10-14). It wasn't prompted by
 any particular game; no counted data exists yet.
+
+---
+
+## 2026-10-14 — Recorder host: laptop for now
+
+**Decision (Ian):** counted recording from Oct 17 runs on the laptop (launchd agent), not a cloud server, until Ian
+decides otherwise. The server setup in `docs/deploy.md` stays ready but unused.
+
+**Consequence:** a game is only clean if the laptop is awake, plugged in and lid-open for its whole window. Claude
+gave Ian a day-by-day schedule of windows (Central time). Kalshi lists games only about a week ahead, so the schedule
+for Oct 21 onward (including most NBA opening-week games) has to be refreshed later.

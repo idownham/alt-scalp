@@ -115,3 +115,6 @@ One entry per working session: date, work, evidence, observation, decision, AI u
   jumps are excluded → the gate is stricter. Recorded in `decisions.md` before any counted data.
   Then extended to **either** move (a small rise followed by a goal crash is excluded too), with the back move
   measured at full size. Claude raised that gap while implementing; Ian accepted it.
+
+- 2026-10-14: Ian chose the laptop as recorder host for counted recording (decisions.md). Window schedule provided;
+  Oct 21+ to be refreshed once Kalshi lists those games.
