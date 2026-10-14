@@ -43,3 +43,30 @@ window, 60 s mark-out, 100 round trips, home-team market. A genuine mid move is 
 
 **Why:** a 1¢ minimum tick makes a spread threshold a poor tradability test. Precise definitions are needed before
 data exists. The extra GO conditions stop a few low-fill games from producing a GO.
+
+---
+
+## 2026-10-14 — S2 implementation details (PROPOSED by Claude; Ian to confirm before counted recording starts Oct 17)
+
+The confirmed criteria leave some mechanics open. These are fixed here **before the S2 code has been run on any
+data**: not on test games, not on counted games, and not on historical data. That way the choice can't be shaped by
+results. None of them changes a threshold.
+
+1. **Mid** = (best YES bid + best YES ask) / 2 from each snapshot of the home market. Snapshots with an empty side are skipped.
+2. **Genuine level:** a mid value whose run lasts ≥ 10 s, measured from the run's first snapshot to the first snapshot
+   with a different mid (for the final run, to the last snapshot). Shorter runs are flicker/bounce and are dropped.
+   Consecutive equal genuine levels merge. A *genuine mid move* is a change between consecutive genuine levels.
+3. **X** = spread + 2 × maker fee, both taken at the pivot (the genuine level where the move starts). The maker fee is
+   the exact per-contract formula for the market's recorded series fee (0.07 × multiplier × 0.25 × P × (1 − P) for
+   `quadratic_with_maker_fees`, i.e. 0.0175·P·(1−P)), unrounded.
+4. **Reversal (zigzag rule):** track a pivot. An *out leg* is a move of ≥ X(pivot) away from the pivot, extended while
+   the mid keeps going the same way (the extreme and its time update). A *reversal* is counted when the mid comes
+   back ≥ X from the extreme within 5 min of the time the extreme was set. The extreme then becomes the new pivot, and
+   the back leg is the next potential out leg, so each turn counts once. A back move of ≥ X that takes longer than
+   5 min still turns the zigzag, but doesn't count.
+5. **Counted games:** scheduled start ≥ 2026-10-17 00:00 CT (05:00Z), regular season, and CLEAN per
+   `altscalp status`. Trading pauses are checked by hand. Games before that are test games and are reported separately, if at all.
+6. **"Median game"** = the median reversal count across all counted clean games, all leagues pooled. Per-league
+   medians are reported but don't decide the gate.
+7. **Pre/post start** splits use the scheduled start. *Jumps* (descriptive only) are genuine moves ≥ 3 × X; they're
+   listed with time relative to scheduled start for manual cause-tagging.
