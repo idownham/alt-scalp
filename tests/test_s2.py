@@ -69,10 +69,23 @@ def test_slow_return_turns_but_does_not_count():
 
 
 def test_out_leg_extends_and_back_measured_from_extreme():
-    zz = zigzag(path(5000, 5200, 5400, 5600, 5300), FIXED_X(200))
+    zz = zigzag(path(5000, 5200, 5400, 5500, 5200), FIXED_X(200))
     [r] = zz.reversals
-    assert r.out_e4 == Decimal(600)
+    assert r.out_e4 == Decimal(500)
     assert r.extreme_t_ns == 60 * S and r.back_t_ns == 80 * S
+
+
+def test_jump_then_pullback_is_not_a_reversal():
+    # Out leg 6¢ = 3 × X: a jump. The 2.5¢ pullback turns the zigzag but isn't counted.
+    zz = zigzag(path(5000, 5600, 5350, 5600), FIXED_X(200))
+    assert [size for size, _ in zz.legs] == [Decimal(600), Decimal(250)]
+    # The pullback leg (5600 -> 5350, 2.5¢ < 3 × X) then reverses back: that one counts.
+    assert len(zz.reversals) == 1 and zz.reversals[0].out_e4 == Decimal(250)
+
+
+def test_just_under_a_jump_still_counts():
+    zz = zigzag(path(5000, 5599, 5350), FIXED_X(200))
+    assert len(zz.reversals) == 1
 
 
 def test_swing_starting_with_a_drift_is_caught():

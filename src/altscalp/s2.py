@@ -3,7 +3,8 @@
 Per game, on the home team's market only (pre-registered, docs/spec.md):
 - the mid path, split into genuine levels (persisting ≥ 10 s) vs flicker/bid-ask bounce;
 - spread before and after the scheduled start;
-- zigzag swings vs X = spread + 2 × maker fee, and reversals (≥ X out, ≥ X back within 5 min);
+- zigzag swings vs X = spread + 2 × maker fee, and reversals (≥ X out, ≥ X back within 5 min,
+  out leg not a jump);
 - jumps (genuine moves ≥ 3 × X), listed for manual cause-tagging.
 
 The mechanics follow docs/decisions.md, "2026-10-14 — S2 implementation details". Prices are
@@ -128,7 +129,8 @@ def zigzag(
             continue
         size = abs(extreme.mid_e4 - pivot.mid_e4)
         out.legs.append((size, x))
-        if lvl.t_ns - extreme.t_ns <= back_within_ns:
+        # A jump (out leg ≥ 3 × X) followed by a pullback isn't noise; it doesn't count (decisions.md 2026-10-14).
+        if lvl.t_ns - extreme.t_ns <= back_within_ns and size < JUMP_MULTIPLE * x:
             out.reversals.append(Reversal(pivot.t_ns, extreme.t_ns, lvl.t_ns, x, size))
         # The extreme is the new pivot; the back leg is the next potential out leg.
         pivot = extreme

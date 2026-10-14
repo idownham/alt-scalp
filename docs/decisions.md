@@ -46,7 +46,7 @@ data exists. The extra GO conditions stop a few low-fill games from producing a 
 
 ---
 
-## 2026-10-14 — S2 implementation details (PROPOSED by Claude; Ian to confirm before counted recording starts Oct 17)
+## 2026-10-14 — S2 implementation details (proposed by Claude; CONFIRMED by Ian 2026-10-14, see next entry)
 
 The confirmed criteria leave some mechanics open. These are fixed here **before the S2 code has been run on any
 data**: not on test games, not on counted games, and not on historical data. That way the choice can't be shaped by
@@ -71,3 +71,20 @@ results. None of them changes a threshold.
    medians are reported but don't decide the gate.
 7. **Pre/post start** splits use the scheduled start. *Jumps* (descriptive only) are genuine moves ≥ 3 × X; they're
    listed with time relative to scheduled start for manual cause-tagging.
+
+---
+
+## 2026-10-14 — S2 rules confirmed; jumps don't count as reversals
+
+**Decision (Ian):** the S2 implementation details above are confirmed, with one change:
+
+8. **A reversal whose out leg is a jump (out leg ≥ 3 × X at its pivot) is not counted.** The zigzag still turns there,
+   and the leg still appears in the swing-size distribution and the jump list.
+
+**Why:** the hypothesis is about noise around an unchanged fair value. A one-way jump (e.g. a goal) followed by a
+small pullback isn't that noise; a maker on the wrong side gets run over by it. This makes the gate stricter, not
+looser.
+
+**Disclosure:** this change was prompted by looking at **test** data. The first S2 run on the Oct 13 NHL test games
+(not counted) showed MIN@WPG's 15¢ goal jump plus a 2.5¢ pullback counting as a reversal. It was decided before any
+counted data exists (counted recording starts 2026-10-17). The spec's reversal definition was updated to match.
