@@ -118,3 +118,6 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 
 - 2026-10-14: Ian chose the laptop as recorder host for counted recording (decisions.md). Window schedule provided;
   Oct 21+ to be refreshed once Kalshi lists those games.
+- 2026-10-14: at Ian's request, the recorder now keeps the Mac awake only while a game window is open or opens within
+  2 h (d16afaf), so a laptop on battery isn't held awake overnight. Verified on the Mac: the hold appears and is
+  released, and after the restart (no window within 2 h) no caffeinate assertion was held.
