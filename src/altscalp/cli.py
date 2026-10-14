@@ -1,5 +1,6 @@
 """Command line: `altscalp record` (run the recorder), `altscalp status` (coverage per game),
-`altscalp schedule` (upcoming windows), `altscalp busy` (exit 0 if a window is open or about to open).
+`altscalp schedule` (upcoming windows), `altscalp busy` (exit 0 if a window is open or about to open),
+`altscalp analyze` (S2: noise, reversals and the gate).
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from pathlib import Path
 from altscalp.kalshi import KalshiClient
 from altscalp.recorder import Recorder
 from altscalp.report import coverage, format_table
+from altscalp.s2 import analyze_game, clean_games, evaluate_gate, format_results
 from altscalp.store import Store, iso
 
 DEFAULT_DIR = Path("data/recordings")
@@ -36,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("status", help="recording coverage and clean/not-clean per game")
     sub.add_parser("schedule", help="refresh the schedule and list upcoming windows")
+    an = sub.add_parser("analyze", help="S2 analysis of clean games' home markets, and the S2 gate")
+    an.add_argument("--include-test", action="store_true", help="also analyse test games (before Oct 17); they don't count")
     sub.add_parser("busy", help="exit 0 if a game window is open or opens within 5 min (used by deploy/update.sh)")
 
     args = parser.parse_args(argv)
@@ -49,6 +53,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "busy":
             now = datetime.now(timezone.utc)
             return 0 if store.window_open_between(iso(now), iso(now + BUSY_LEAD)) else 1
+        if args.command == "analyze":
+            now = iso(datetime.now(timezone.utc))
+            results = [r for e in clean_games(store, now, args.include_test) if (r := analyze_game(store, e))]
+            print(format_results(results, evaluate_gate(results), args.include_test))
+            return 0
         if args.command == "schedule":
             with KalshiClient() as client:
                 Recorder(client, store).refresh_schedule()

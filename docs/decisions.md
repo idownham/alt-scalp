@@ -59,8 +59,9 @@ results. None of them changes a threshold.
 3. **X** = spread + 2 × maker fee, both taken at the pivot (the genuine level where the move starts). The maker fee is
    the exact per-contract formula for the market's recorded series fee (0.07 × multiplier × 0.25 × P × (1 − P) for
    `quadratic_with_maker_fees`, i.e. 0.0175·P·(1−P)), unrounded.
-4. **Reversal (zigzag rule):** track a pivot. An *out leg* is a move of ≥ X(pivot) away from the pivot, extended while
-   the mid keeps going the same way (the extreme and its time update). A *reversal* is counted when the mid comes
+4. **Reversal (zigzag rule):** track a pivot. While no out leg is under way, the pivot is the running low (for an up
+   leg) or high (for a down leg) since the last turn. An *out leg* is a move of ≥ X(pivot) away from the pivot,
+   extended while the mid keeps going the same way (the extreme and its time update). A *reversal* is counted when the mid comes
    back ≥ X from the extreme within 5 min of the time the extreme was set. The extreme then becomes the new pivot, and
    the back leg is the next potential out leg, so each turn counts once. A back move of ≥ X that takes longer than
    5 min still turns the zigzag, but doesn't count.

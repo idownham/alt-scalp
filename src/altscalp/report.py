@@ -55,7 +55,7 @@ class Coverage:
 EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
-def _ns(iso_text: str) -> int:
+def ns_from_iso(iso_text: str) -> int:
     dt = datetime.fromisoformat(iso_text.replace("Z", "+00:00"))
     return (dt - EPOCH) // timedelta(microseconds=1) * 1000
 
@@ -95,7 +95,7 @@ def coverage(store: Store, now_utc: str | None = None) -> list[Coverage]:
             event_ticker=g["event_ticker"], league=g["league"], title=g["title"], start_utc=g["start_utc"],
             window_start_utc=g["window_start_utc"], window_end_utc=g["window_end_utc"],
             home_ticker=home, snapshots=len(times),
-            max_gap_s=max_gap_seconds(times, _ns(g["window_start_utc"]), _ns(measured_until)),
+            max_gap_s=max_gap_seconds(times, ns_from_iso(g["window_start_utc"]), ns_from_iso(measured_until)),
             trades=trades, trades_note=g["trades_fetched_ns"] and g["trades_note"],
             incentive=incentive, schedule_changed=changed,
         ))
