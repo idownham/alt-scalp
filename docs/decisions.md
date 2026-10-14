@@ -88,3 +88,18 @@ looser.
 **Disclosure:** this change was prompted by looking at **test** data. The first S2 run on the Oct 13 NHL test games
 (not counted) showed MIN@WPG's 15¢ goal jump plus a 2.5¢ pullback counting as a reversal. It was decided before any
 counted data exists (counted recording starts 2026-10-17). The spec's reversal definition was updated to match.
+
+---
+
+## 2026-10-14 — Jump exclusion extended to either move
+
+**Decision (Ian):** rule 8 now applies to **both** moves. A reversal is not counted if its out leg **or** its back
+move is a jump (≥ 3 × X, using the reversal's X). The back move is measured at its full size: from the extreme to
+the furthest point reached before the zigzag next turns or the window ends. Measuring it only at the point it
+first passes X would miss a crash that arrives as a small step followed by a large one.
+
+**Why:** a small rise followed by a goal crash is the same adverse-selection event as a jump followed by a pullback,
+just in mirror image. The rule should treat them the same. This makes the gate stricter.
+
+**Disclosure:** Claude raised this gap while implementing rule 8 (same session, 2026-10-14). It wasn't prompted by
+any particular game; no counted data exists yet.

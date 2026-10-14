@@ -113,3 +113,5 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - *Ian's judgment:* confirmed the S2 rules, and chose option (b): reversals whose out leg is a jump (≥ 3 × X) don't
   count. This is an evidence → decision → consequence entry: test data showed a goal jump counting as "noise" →
   jumps are excluded → the gate is stricter. Recorded in `decisions.md` before any counted data.
+  Then extended to **either** move (a small rise followed by a goal crash is excluded too), with the back move
+  measured at full size. Claude raised that gap while implementing; Ian accepted it.

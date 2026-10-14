@@ -76,7 +76,7 @@ Per game and per league:
 - **Maker fee at price P:** 0.0175 · P · (1 − P) per contract, at the actual price (not assumed 50¢).
 - **Genuine mid move:** a change in mid-price whose new value persists ≥ 10 s.
 - **Reversal:** a genuine mid move of ≥ X followed by a genuine move back of ≥ X within 5 min,
-  where X = (spread + 2 × maker fee) at the time of the first move. A first move of ≥ 3 × X is a jump and doesn't
+  where X = (spread + 2 × maker fee) at the time of the first move. If either move is ≥ 3 × X it's a jump and doesn't
   count (`decisions.md` 2026-10-14). Exact mechanics are in `decisions.md`, "S2 implementation details".
 - **Historical data:** out-of-sample only, untouched until S2 on recorded games is complete (`decisions.md`).
 

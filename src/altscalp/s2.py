@@ -4,7 +4,7 @@ Per game, on the home team's market only (pre-registered, docs/spec.md):
 - the mid path, split into genuine levels (persisting ≥ 10 s) vs flicker/bid-ask bounce;
 - spread before and after the scheduled start;
 - zigzag swings vs X = spread + 2 × maker fee, and reversals (≥ X out, ≥ X back within 5 min,
-  out leg not a jump);
+  neither move a jump);
 - jumps (genuine moves ≥ 3 × X), listed for manual cause-tagging.
 
 The mechanics follow docs/decisions.md, "2026-10-14 — S2 implementation details". Prices are
@@ -110,7 +110,21 @@ def zigzag(
     direction = 0  # +1 up, -1 down, 0 = no out leg under way
     low = high = pivot = extreme = levels[0]
     x = x_of(pivot)
+    # A candidate reversal waits until its back move is complete (next turn or window end), so a
+    # back move that turns into a jump can still disqualify it (decisions.md 2026-10-14).
+    pending: Reversal | None = None
+    pending_dir = 0
+    pending_extreme_mid = pending_back = Decimal(0)
+
+    def settle() -> None:
+        nonlocal pending
+        if pending is not None and pending_back < JUMP_MULTIPLE * pending.x_e4:
+            out.reversals.append(pending)
+        pending = None
+
     for lvl in levels[1:]:
+        if pending is not None:
+            pending_back = max(pending_back, (pending_extreme_mid - lvl.mid_e4) * pending_dir)
         if direction == 0:
             if lvl.mid_e4 - low.mid_e4 >= x_of(low):
                 direction, pivot, extreme = 1, low, lvl
@@ -127,11 +141,14 @@ def zigzag(
             continue
         if (extreme.mid_e4 - lvl.mid_e4) * direction < x:
             continue
+        settle()  # the previous candidate's back move was the leg that just completed
         size = abs(extreme.mid_e4 - pivot.mid_e4)
         out.legs.append((size, x))
-        # A jump (out leg ≥ 3 × X) followed by a pullback isn't noise; it doesn't count (decisions.md 2026-10-14).
+        # A jump out leg (≥ 3 × X) followed by a pullback isn't noise; it isn't a candidate.
         if lvl.t_ns - extreme.t_ns <= back_within_ns and size < JUMP_MULTIPLE * x:
-            out.reversals.append(Reversal(pivot.t_ns, extreme.t_ns, lvl.t_ns, x, size))
+            pending = Reversal(pivot.t_ns, extreme.t_ns, lvl.t_ns, x, size)
+            pending_dir, pending_extreme_mid = direction, extreme.mid_e4
+            pending_back = (extreme.mid_e4 - lvl.mid_e4) * direction
         # The extreme is the new pivot; the back leg is the next potential out leg.
         pivot = extreme
         x = x_of(pivot)
@@ -140,6 +157,7 @@ def zigzag(
         else:
             direction = 0
             low, high = (lvl, pivot) if lvl.mid_e4 < pivot.mid_e4 else (pivot, lvl)
+    settle()
     return out
 
 

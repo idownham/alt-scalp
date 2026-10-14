@@ -140,3 +140,21 @@ def test_analyze_game_end_to_end(client, store):
     assert r.ticker == "KXNHLGAME-26OCT19PITUTA-UTA"  # home market only
     assert r.quotes == 1 and r.spread_pre_median_e4 == 800
     assert r.counted  # scheduled Oct 20 01:00Z, after counted recording starts
+
+
+def test_small_rise_then_crash_is_not_a_reversal():
+    # Up 2¢, then a 16¢ crash in one step: the back move is a jump.
+    zz = zigzag(path(5000, 5200, 3600), FIXED_X(200))
+    assert zz.reversals == []
+
+
+def test_crash_arriving_in_two_steps_is_measured_at_full_size():
+    # Back move passes X at 49.5¢ (2.5¢), then keeps falling to 36¢: full back move 16¢ is a jump.
+    zz = zigzag(path(5000, 5200, 4950, 3600), FIXED_X(200))
+    assert zz.reversals == []
+
+
+def test_back_move_settled_at_next_turn():
+    # Back move 52 -> 49.5 (2.5¢) completes when the price turns up again: under 3 × X, so it counts.
+    zz = zigzag(path(5000, 5200, 4950, 5200), FIXED_X(200))
+    assert [r.out_e4 for r in zz.reversals] == [Decimal(200), Decimal(250)]
