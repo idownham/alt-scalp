@@ -187,5 +187,5 @@ myself on 2026-10-13. "Docs" means docs.kalshi.com.
 - Schedule: from `GET /milestones` → `start_date`. Map milestone → event via `related_event_tickers`.
 - Per market: snapshot `fee_type`/`fee_multiplier` (series), `price_ranges`, and any active `incentive_programs` at record time.
 - Store prices as integer hundredths of a cent (4-decimal dollars → ×10,000), or as Decimal. Store counts as integer hundredths.
-- Reuse candidates (don't copy yet): `~/code/alt-arb/src/altarb/venues/kalshi.py`, `http.py`, `models.py`,
+- Reuse candidates (don't copy yet): `~/code/alt/project-osprey/src/altarb/venues/kalshi.py` (was `~/code/alt-arb` until 2026-10-14), `http.py`, `models.py`,
   `pricing/fees.py` (alt-arb HEAD 594878f).

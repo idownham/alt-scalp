@@ -34,8 +34,8 @@ Update this line when the stage changes.
 ## Conventions
 - Python 3.11+, `pyproject.toml`, virtualenv in `.venv/`, `pytest`.
 - Raw recordings in `data/recordings/` (gitignored; large). Commit summaries/derived stats only.
-- The Kalshi client and fee model may be copied from `../alt-arb/src/altarb/venues/kalshi.py`, `http.py`,
-  `models.py` and `pricing/fees.py` (laptop path: `~/code/alt/alt-arb`). Copy, then adapt; note the source commit.
+- The Kalshi client and fee model may be copied from `../project-osprey/src/altarb/venues/kalshi.py`, `http.py`,
+  `models.py` and `pricing/fees.py` (laptop path: `~/code/alt/project-osprey`, repo alt-arb). Copy, then adapt; note the source commit.
 - Small, focused commits.
 
 ## Docs map

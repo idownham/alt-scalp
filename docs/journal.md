@@ -121,3 +121,7 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - 2026-10-14: at Ian's request, the recorder now keeps the Mac awake only while a game window is open or opens within
   2 h (d16afaf), so a laptop on battery isn't held awake overnight. Verified on the Mac: the hold appears and is
   released, and after the restart (no window within 2 h) no caffeinate assertion was held.
+- 2026-10-14: HQ folder rename (HQ `docs/decisions.md`): this checkout moved from `~/code/alt/alt-scalp` to
+  `~/code/alt/project-coin-toss` (GitHub repo name unchanged). The launchd agent was unloaded at 15:30 CT, `.venv`
+  rebuilt (57 tests pass), the plist template updated to the new path, and the agent reinstalled and loaded at 15:31.
+  No game window was open (next 18:00 CT), so no recording was lost; the schedule refreshed from the new path at 15:31:52.
