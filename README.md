@@ -14,6 +14,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -e '.[dev]'
 .venv/bin/altscalp schedule     # refresh the schedule, list upcoming windows
 .venv/bin/altscalp record       # run until Ctrl-C; keeps the Mac awake (caffeinate)
 .venv/bin/altscalp status       # per-game coverage: snapshots, max gap, trades, CLEAN / not-clean
+.venv/bin/altscalp analyze      # S2: noise, reversals, gate (counted games; --include-test for test games)
 .venv/bin/pytest                # unit tests (add -m live for one real-API check)
 ```
 

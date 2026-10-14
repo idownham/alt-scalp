@@ -84,3 +84,30 @@ One entry per working session: date, work, evidence, observation, decision, AI u
 - Follow-ups: the recorder now logs a `clock_jump` when a loop overruns by more than 30 s, so the cause of a gap is
   on record; `status` measures an open window's gap only up to now. Ian chose to move recording to an always-on
   server (the spec's fallback) before counted recording on Oct 17.
+
+---
+
+## 2026-10-14 — S2 analysis build
+
+**Work**
+- Wrote the open S2 mechanics into `decisions.md` as a **proposal** (mid, genuine level, X at the pivot, zigzag
+  reversal rule, counted-from date, pooled median, jumps). This was committed (11d0dd7) *before* the code existed or
+  ran on any data. One amendment followed before any run: the zigzag starts from the running high/low, so swings that
+  begin with a drift aren't missed.
+- Built `src/altscalp/s2.py` and `altscalp analyze`, plus `fees.py` (maker coefficient, adapted from alt-arb
+  `pricing/fees.py` @ 594878f). 51 tests pass, including hand-computed zigzag cases. The code was committed (7531df4)
+  before its first run on recorded data.
+
+**First run, TEST games only (Oct 13 NHL, 9 clean games — don't count)**
+- Spread 1.00¢ before and after the start in every game; X ≈ 1.8–1.9¢.
+- Median reversals = 1 (gate needs ≥ 3). Most trade-price changes were bid-ask bounce (e.g. 110 of 127 in PIT@CHI).
+- Hand-check of MIN@WPG: mid flat at 49.5¢ for the whole pre-game, then a 15¢ jump at +12 min (likely an early goal),
+  then three small wobbles. The detector matched the definitions exactly.
+- **Observation for Ian:** under the confirmed reversal definition, a one-way jump followed by a ≥ X pullback
+  counts as a reversal (MIN@WPG's goal jump did). That may not match the hypothesis's intent (noise around an
+  unchanged fair value). Any change must be decided and recorded **before Oct 17**, noting that it was prompted by
+  test data.
+
+**AI use + Ian's judgment**
+- Claude proposed the S2 mechanics, wrote the code and tests, and ran it on test games only.
+- *Ian's judgment:* _(to fill in: confirm or revise the 2026-10-14 S2 proposal in decisions.md; decide whether jumps should count as reversals)_
