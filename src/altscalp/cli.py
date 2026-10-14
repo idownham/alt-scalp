@@ -8,14 +8,13 @@ from __future__ import annotations
 import argparse
 import fcntl
 import logging
-import os
 import signal
-import subprocess
 import sys
 import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from altscalp.awake import Caffeinate
 from altscalp.kalshi import KalshiClient
 from altscalp.recorder import Recorder
 from altscalp.report import coverage, format_table
@@ -34,7 +33,8 @@ def main(argv: list[str] | None = None) -> int:
     rec = sub.add_parser("record", help="run the recorder until stopped (Ctrl-C)")
     rec.add_argument("--interval", type=float, default=2.5, help="seconds between book snapshots (spec: 2-3)")
     rec.add_argument("--home-only", action="store_true", help="snapshot only the home team's market")
-    rec.add_argument("--no-caffeinate", action="store_true", help="don't keep the Mac awake")
+    rec.add_argument("--no-caffeinate", action="store_true",
+                     help="never keep the Mac awake (default: only while a window is open or within 2 h)")
 
     sub.add_parser("status", help="recording coverage and clean/not-clean per game")
     sub.add_parser("schedule", help="refresh the schedule and list upcoming windows")
@@ -89,9 +89,7 @@ def _record(args: argparse.Namespace, db: Path) -> int:
         print("another recorder is already running on this directory", file=sys.stderr)
         return 1
 
-    if sys.platform == "darwin" and not args.no_caffeinate:
-        # -i: no idle sleep, -s: no system sleep on AC power; -w: exit when we do.
-        subprocess.Popen(["caffeinate", "-is", "-w", str(os.getpid())])
+    keep_awake = Caffeinate() if sys.platform == "darwin" and not args.no_caffeinate else None
 
     stopping = threading.Event()  # set by Ctrl-C / SIGTERM; also cuts short the recorder's sleeps
 
@@ -104,9 +102,14 @@ def _record(args: argparse.Namespace, db: Path) -> int:
     store = Store(db)
     try:
         with KalshiClient() as client:
-            recorder = Recorder(client, store, interval=args.interval, home_only=args.home_only, sleep=stopping.wait)
+            recorder = Recorder(
+                client, store, interval=args.interval, home_only=args.home_only,
+                sleep=stopping.wait, keep_awake=keep_awake,
+            )
             recorder.run(stop=stopping.is_set)
     finally:
+        if keep_awake is not None:
+            keep_awake(False)
         store.close()
     return 0
 

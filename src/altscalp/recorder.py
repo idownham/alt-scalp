@@ -20,6 +20,7 @@ import time
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 
+from altscalp.awake import AWAKE_LEAD
 from altscalp.kalshi import MAX_ORDERBOOK_TICKERS, KalshiClient
 from altscalp.schedule import LEAGUES, WINDOW_AFTER, League, game_from_milestone, is_home_market
 from altscalp.store import Store, iso
@@ -43,6 +44,7 @@ class Recorder:
         leagues: dict[str, League] = LEAGUES,
         clock: Callable[[], int] = time.time_ns,
         sleep: Callable[[float], None] = time.sleep,
+        keep_awake: Callable[[bool], None] | None = None,
     ) -> None:
         self.client = client
         self.store = store
@@ -55,6 +57,8 @@ class Recorder:
         self._next_refresh_ns = 0
         self._series_fees: dict[str, tuple[str, str]] = {}
         self._last_429 = 0
+        self.keep_awake = keep_awake
+        self._awake: bool | None = None
 
     def now(self) -> datetime:
         return datetime.fromtimestamp(self.clock() / 1e9, tz=timezone.utc)
@@ -168,6 +172,7 @@ class Recorder:
             self._next_refresh_ns = tick_start + int(self.refresh_every * 1e9)
 
         now = self.now()
+        self._update_awake(now)
         tickers = self.store.active_tickers(iso(now), self.home_only)
         if not tickers and self.store.games_needing_markets(iso(now), iso(now)):
             # A window opened before its markets were loaded (e.g. just started up): load them now.
@@ -189,6 +194,18 @@ class Recorder:
             elapsed = (self.clock() - tick_start) / 1e9
             return max(0.0, self.interval - elapsed)
         return self._idle_sleep()
+
+    def _update_awake(self, now: datetime) -> None:
+        """Hold the Mac awake only while a window is open or opens within AWAKE_LEAD."""
+        if self.keep_awake is None:
+            return
+        need = self.store.window_open_between(iso(now), iso(now + AWAKE_LEAD))
+        if need != self._awake:
+            self.keep_awake(need)
+            self._awake = need
+            msg = "keeping awake: window open or within 2 h" if need else "releasing: no window within 2 h"
+            log.info(msg)
+            self.store.log(self.clock(), "awake_on" if need else "awake_off", msg)
 
     def _idle_sleep(self) -> float:
         now = self.now()

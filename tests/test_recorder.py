@@ -152,3 +152,19 @@ def test_long_sleep_is_logged_as_clock_jump(client, store):
     Recorder(client, store, clock=clock, sleep=sleep).run(stop=lambda: next(stops))
     jumps = [r[0] for r in store.db.execute("SELECT message FROM log WHERE kind = 'clock_jump'")]
     assert len(jumps) == 1 and "600s" in jumps[0]
+
+
+def test_keeps_awake_only_near_and_during_windows(client, store):
+    calls = []
+    clock = Clock(START - timedelta(hours=5))
+    rec = _recorder(client, store, clock, keep_awake=calls.append)
+    rec.step()  # 4.5 h before the window: no need
+    clock.set(START - timedelta(hours=2, minutes=29))
+    rec.step()  # window opens in 1 h 59 min: hold awake
+    clock.set(START)
+    rec.step()  # in the window: still held, no repeat call
+    clock.set(START + timedelta(minutes=21))
+    rec.step()  # window closed, nothing else scheduled: release
+    assert calls == [False, True, False]
+    kinds = [r[0] for r in store.db.execute("SELECT kind FROM log WHERE kind LIKE 'awake%' ORDER BY id")]
+    assert kinds == ["awake_off", "awake_on", "awake_off"]
