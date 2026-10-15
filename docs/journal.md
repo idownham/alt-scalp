@@ -125,3 +125,28 @@ One entry per working session: date, work, evidence, observation, decision, AI u
   `~/code/alt/project-coin-toss` (GitHub repo name unchanged). The launchd agent was unloaded at 15:30 CT, `.venv`
   rebuilt (57 tests pass), the plist template updated to the new path, and the agent reinstalled and loaded at 15:31.
   No game window was open (next 18:00 CT), so no recording was lost; the schedule refreshed from the new path at 15:31:52.
+
+---
+
+## 2026-10-14 (evening) — First test windows after the folder move
+
+**Observation / test** (`altscalp status`, `data/recordings/recorder.log`, `pmset -g log`; test games, don't count)
+- **MTL@WSH (window 18:00–18:50 CT) — CLEAN:** 1,171 snapshots, max gap 10.5 s, 1,148 trades fetched at 18:52.
+  The 10.5 s gap is at the start of the window: 4 failed polls (DNS errors) at 18:00:00–18:00:07. pmset shows the Mac
+  was on battery and asleep with the lid closed (maintenance wakes only) until the lid was opened at 17:59:45, so the
+  network wasn't back yet. The keep-awake hold had been on since ~16:00, as designed, but can't stop lid-closed sleep.
+- **DAL@COL (window 19:00–19:50 CT) — not clean:** 977 snapshots, max gap 490.8 s, 1,906 trades fetched at 19:52.
+  The lid was closed on battery at 19:37:05 (78%), and the Mac slept ('Clamshell Sleep') from 19:38:33 to 19:46:33.
+  The recorder logged `loop took 481s` and resumed when the lid opened. Same failure mode as NJ@DET on Oct 13.
+- The recorder itself worked from the new path: it scheduled both games, fetched both trade tapes after the windows,
+  logged the stall, and released the keep-awake hold at 19:50 (no window within 2 h).
+
+**Takeaway:** the code works from the new folder. Both problems came from the laptop being on battery with the lid
+closed, not from the recorder. Ian's routine for counted days (plugged in, lid open by ~2 h before the first window)
+wasn't in place tonight; on battery with the lid closed, no software setting keeps a Mac awake. From Oct 17 a
+game is only clean if that routine is followed for the whole slate.
+
+**AI use + Ian's judgment**
+- Claude ran the checks and read the logs. At first it reported the 18:00 DNS failures as a network blip with no
+  sleep, then corrected that after the pmset log showed the Mac had been asleep until 17:59:45.
+- *Ian's judgment:* _(to fill in)_
