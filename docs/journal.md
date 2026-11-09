@@ -179,3 +179,32 @@ were made in this period, so there are no session notes to draw on. Nothing here
   is verified clean, then it's unloaded. CLAUDE.md (host, rule 6) and `docs/deploy.md` are updated.
 - **AI use + Ian's judgment:** Claude ran the move and wrote these entries from the data. Ian chose the shared droplet
   and the $12 plan, and asked for the move and the backfill. *Ian's judgment on the S2 timing: (to fill in).*
+
+---
+
+## 2026-11-09 — S2 analysis: gate failed, STOP ⭐ evidence → decision → consequence
+
+**Work:** `altscalp analyze` (`s2.py` unchanged since `70cbfcf`; 57 tests pass) on a frozen `sqlite3 .backup` copy of the
+laptop DB, taken 2026-11-09 05:12 UTC. Results are in `docs/s2-results.md`, with the per-game table in `docs/s2-games.txt`.
+
+**Observation / test:**
+- Sample: 196 counted clean games (NBA 83, NFL 39, NHL 74), Oct 18 → Nov 9 02:00 UTC. 167 counted windows weren't
+  clean. The 197 in the Nov 8 entry was off by one: PIT@COL started Oct 16 CT, so it's a test game.
+- **Median reversals per game = 0** (gate needs ≥ 3). Mean is 0.90. 22 games have ≥ 3 and 112 have 0. Per league:
+  NBA 1, NFL 0, NHL 0.
+- Spread is 1¢ in nearly every game, so X ≈ 1.8¢. 94.1% of 43,248 trade-price changes were bid-ask bounce. All 82
+  jumps (≥ 3 × X) came after the scheduled start.
+- Sensitivity (not decisive): without the Oct 14 jump exclusion the median would be 2, which still fails.
+
+**Decision (Ian, in chat):** STOP at S2 (decisions.md 2026-11-09). S3 isn't run.
+- **Evidence:** median 0 reversals in 196 games.
+- **Decision:** STOP.
+- **Consequence:** the project ends with a documented "no edge". Recorders and the historical check are open owner decisions.
+
+**Caveats:** the clean set over-represents times the laptop was awake. Trading pauses weren't hand-checked. The
+analysis ran about 2 weeks after the planned Oct 22–24, with criteria unchanged since Oct 14.
+
+**AI use + Ian's judgment**
+- Claude ran the analysis, computed the summary and sensitivity figures, wrote the results doc, and found the 197 → 196
+  miscount. Every figure comes from the code output on the DB copy.
+- *Ian's judgment:* accepted the result and confirmed STOP in chat.

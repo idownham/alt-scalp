@@ -9,7 +9,8 @@ Owner: Ian Downham (GitHub: idownham). Part of a graded class project, so accura
 evidence trail matter as much as the result. A well-evidenced "no edge" is a valid outcome.
 
 ## Current stage
-**S1 — Recorder built; test run Oct 15–16, counted recording from Oct 17.** Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
+**STOP at S2 (Ian confirmed 2026-11-09).** S2 gate failed on 196 counted clean games: median reversals 0, ≥ 3 needed
+(`docs/s2-results.md`, `docs/decisions.md`). S3 is not run. Whether the recorders keep running is an open owner decision. Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
 Update this line when the stage changes.
 
 ## Scope (decided by owner, 2026-10-13)

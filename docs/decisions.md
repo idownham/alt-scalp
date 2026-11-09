@@ -132,3 +132,28 @@ from this HQ session at Ian's request, not from a Coin Toss session. This supers
 - The laptop recorder keeps running as a backup until the first server window is verified clean, then it's unloaded.
   From the cutover, the server DB is the source of truth. The laptop DB is kept as is, and windows are never mixed between hosts.
 - The pre-registered criteria are unchanged.
+
+---
+
+## 2026-11-09 — S2 verdict: STOP
+
+**Evidence:** `docs/s2-results.md`, with per-game output in `docs/s2-games.txt`. `altscalp analyze` at `014c442` ran on a
+frozen copy of the laptop DB (2026-11-09 05:12 UTC). The sample is 196 counted clean games (NBA 83, NFL 39, NHL 74) and
+meets the enough-data rule. **Median reversals = 0** against the pre-registered ≥ 3. Only 22 games (11%) reach 3, and
+112 have none. Per league the medians are NBA 1, NFL 0 and NHL 0. Spreads sit at the 1¢ tick, so X ≈ 1.8¢. 94% of
+trade-price changes are bid-ask bounce. All 82 jumps came after the scheduled start. Descriptive only: without the jump
+exclusion the median would be 2, which still fails.
+
+**Decision (Ian, in chat, 2026-11-09):** confirmed **STOP** at S2. The noise around game start isn't tradable under
+the pre-registered definition. S3 (maker simulation) isn't run, and no live trading is considered.
+
+**Notes:**
+- The counted sample is 196, not the 197 in the 2026-11-08 entries. PIT@COL (01:00 UTC Oct 17 = Oct 16 CT) is a test
+  game under rule 5 of "S2 implementation details". The code already applied that rule; no rule was reinterpreted.
+- Trading pauses weren't checked by hand (the DB has no market status). This can't change the median (see results doc).
+- No criterion or threshold was changed.
+
+**Consequence:** Coin Toss ends at S2 with a well-evidenced "no edge". These are still open owner decisions, not
+decided here:
+- whether the droplet and laptop recorders keep running;
+- whether the historical data is used as the out-of-sample check (decisions.md 2026-10-13).
