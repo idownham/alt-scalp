@@ -15,7 +15,9 @@ Update this line when the stage changes.
 ## Scope (decided by owner, 2026-10-13)
 - **Venue:** Kalshi only. (Polymarket's ~30 req/min per-IP limit is already used by alt-arb's scanner.)
 - **Leagues:** NFL, NBA (regular season only, starts 2026-10-20), NHL.
-- **Recorder host:** Ian's laptop (macOS) to start; a second small server later if needed.
+- **Recorder host:** the shared droplet `alt-arb` since 2026-11-09 04:40 UTC (own user `altscalp`, `/opt/alt-scalp`,
+  systemd; HQ decision 2026-10-15). It shares an IP with Osprey's scanner and Slot Machine's recorder, so keep the
+  429 back-off and never call Polymarket. The laptop recorder is a backup until the first server game window is verified.
 - **Sample:** 20 clean games, at least 5 per league.
 
 ## Hard rules
@@ -29,7 +31,7 @@ Update this line when the stage changes.
    trade tape proves otherwise). P&L is always net of Kalshi maker/taker fees for the specific series.
 5. **Money as Decimal or integer cents, never float.**
 6. **Don't starve other projects.** Stay well under Kalshi's read rate limit (Basic tier ≈ 20 req/s);
-   alt-arb's droplet scanner also reads Kalshi from a different IP, but keep usage modest anyway.
+   since 2026-11-09 this recorder shares one IP with alt-arb's scanner and Slot Machine's recorder, so keep usage modest.
 
 ## Conventions
 - Python 3.11+, `pyproject.toml`, virtualenv in `.venv/`, `pytest`.

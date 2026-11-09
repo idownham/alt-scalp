@@ -114,3 +114,21 @@ decides otherwise. The server setup in `docs/deploy.md` stays ready but unused.
 **Consequence:** a game is only clean if the laptop is awake, plugged in and lid-open for its whole window. Claude
 gave Ian a day-by-day schedule of windows (Central time). Kalshi lists games only about a week ahead, so the schedule
 for Oct 21 onward (including most NBA opening-week games) has to be refreshed later.
+
+## 2026-11-08 — Recorder moves to the shared droplet `alt-arb`
+
+**Evidence:** since counted recording began on Oct 17, `altscalp status` marks 168 of 365 game windows not clean
+(197 clean: NBA 83, NFL 39, NHL 75). The recorder log shows 17–86 "machine asleep or network stalled" warnings a
+day from Oct 31 to Nov 8. That's the laptop sleeping, the same failure mode as Oct 13–14.
+
+**Decision (Ian, in chat, 2026-11-08):** run the recorder on the resized shared droplet (HQ decision 2026-10-15;
+Ian resized it to 1 vCPU / 2 GB / 50 GB the same evening) instead of the laptop or a separate server. It's set up
+from this HQ session at Ian's request, not from a Coin Toss session. This supersedes "Recorder host: laptop for now"
+(2026-10-14), and the separate-IP note in CLAUDE.md rule 6 no longer holds.
+
+**Consequence:**
+- Server recording starts 2026-11-09 04:40 UTC (`altscalp-recorder`, user `altscalp`, `/opt/alt-scalp`, 57 tests passed,
+  chrony clock sync). No game window was open; the next one opens 2026-11-09 23:30 UTC.
+- The laptop recorder keeps running as a backup until the first server window is verified clean, then it's unloaded.
+  From the cutover, the server DB is the source of truth. The laptop DB is kept as is, and windows are never mixed between hosts.
+- The pre-registered criteria are unchanged.

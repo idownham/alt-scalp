@@ -1,5 +1,11 @@
 # Running the recorder on a cloud server
 
+**Current setup (2026-11-09):** the recorder runs on the shared droplet `alt-arb`, not a separate server (HQ decision
+2026-10-15). It was installed with `setup.sh` from a git bundle (`REPO_URL=<bundle>`), because the server's read-only
+deploy key wasn't on GitHub yet. Its `origin` now points at GitHub, so `altscalp-update` pulls once the key
+(user `altscalp`, `~/.ssh/id_ed25519.pub`) is added at https://github.com/idownham/alt-scalp/settings/keys/new
+with write access OFF. Step 1 below (a separate server) is superseded.
+
 The laptop can't record with the lid closed on battery: the first test window (2026-10-13) lost 20 minutes that way
 (see `journal.md`). A small always-on server is the spec's fallback for missed windows. Cost: about $5–6/month.
 Adapted from alt-arb's `docs/deploy.md`.

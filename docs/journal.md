@@ -150,3 +150,32 @@ game is only clean if that routine is followed for the whole slate.
 - Claude ran the checks and read the logs. At first it reported the 18:00 DNS failures as a network blip with no
   sleep, then corrected that after the pmset log showed the Mac had been asleep until 17:59:45.
 - *Ian's judgment:* _(to fill in)_
+
+---
+
+## 2026-10-15 → 2026-11-08 — Counted recording on the laptop (backfilled 2026-11-08)
+
+*Reconstructed on 2026-11-08 from the recordings DB, `altscalp status` and `data/recordings/recorder.log`. No commits
+were made in this period, so there are no session notes to draw on. Nothing here comes from memory.*
+
+**Observation:**
+- From Oct 17 (the first counted day) through the 2026-11-09 02:00 UTC games, the recorder captured 365 game windows.
+  `altscalp status` marks **197 clean** (NBA 83, NFL 39, NHL 75) and 168 not clean (NBA 63, NFL 16, NHL 89).
+  The spec's sample (20 clean games, ≥ 5 per league) is far exceeded.
+- The recorder log shows "machine asleep or network stalled" warnings on most days, 17–86 a day from Oct 31 to Nov 8.
+  Nov 8 had a 378 s stall at 17:22 CT. Most not-clean windows have long max gaps, consistent with laptop sleep,
+  though not every one was checked individually.
+- **Not done in this period:** the S2 analysis (planned Oct 22–24) and journal entries. The S2 code (`src/altscalp/s2.py`)
+  exists, but no S2 results have been committed.
+
+## 2026-11-08 — Recorder moved to the shared droplet ⭐ evidence → decision → consequence
+- **Evidence:** 168 of 365 counted windows were not clean, and the log shows sleep stalls almost every day (above).
+- **Decision (Ian):** run the recorder on the shared droplet `alt-arb`, resized tonight to 2 GB / 50 GB (decisions.md 2026-11-08).
+- **Work (from an HQ session, at Ian's request):** `deploy/setup.sh` ran on the droplet from a git bundle at `9415e64`
+  (57 tests passed). It installed chrony, user `altscalp`, `/opt/alt-scalp`, `altscalp-recorder` and `altscalp-update.timer`.
+  The recorder started 2026-11-09 04:40:35 UTC and loaded the schedule (95 games). A read-only deploy key was
+  generated for the server. Until Ian adds it on GitHub, auto-update can't pull.
+- **Consequence:** the laptop recorder stays loaded as a backup until the first server window (2026-11-09 23:30 UTC)
+  is verified clean, then it's unloaded. CLAUDE.md (host, rule 6) and `docs/deploy.md` are updated.
+- **AI use + Ian's judgment:** Claude ran the move and wrote these entries from the data. Ian chose the shared droplet
+  and the $12 plan, and asked for the move and the backfill. *Ian's judgment on the S2 timing: (to fill in).*
