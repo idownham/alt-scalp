@@ -208,3 +208,11 @@ analysis ran about 2 weeks after the planned Oct 22–24, with criteria unchange
 - Claude ran the analysis, computed the summary and sensitivity figures, wrote the results doc, and found the 197 → 196
   miscount. Every figure comes from the code output on the DB copy.
 - *Ian's judgment:* accepted the result and confirmed STOP in chat.
+
+## 2026-11-10 — Recording stopped and archived
+- **Decision (Ian):** stop recording after STOP at S2 (Ian told the HQ chat to "take over" with its recommendations on 2026-11-09).
+- **Observation:** all 12 server windows on Nov 9 evening (UTC Nov 9–10) were CLEAN. The move to the droplet worked, but it
+  came after the counted sample had already been recorded on the laptop.
+- **Work:** server recorder and update timer disabled at 03:28:57 UTC. DB copied to `data/recordings/server/` (checksum
+  matched). Laptop agent unloaded. Code left on the server.
+- **AI use + Ian's judgment:** Claude (HQ chat) did the stop and archive and wrote these entries. *Ian: (to fill in).*

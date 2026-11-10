@@ -157,3 +157,14 @@ the pre-registered definition. S3 (maker simulation) isn't run, and no live trad
 decided here:
 - whether the droplet and laptop recorders keep running;
 - whether the historical data is used as the out-of-sample check (decisions.md 2026-10-13).
+
+## 2026-11-10 — Stop recording
+
+**Decision (Ian, 2026-11-09: "take over" on the HQ recommendation):** with S2 = STOP there is no S3, so recording has
+no further use. The server recorder and `altscalp-update.timer` were stopped and disabled at 2026-11-10 03:28:57 UTC,
+after the last window's trades were fetched and with no window open. The laptop launchd agent is unloaded.
+**Archive:** the server DB (2026-11-09 04:40 → 11-10 03:29 UTC; 12 windows, all CLEAN; sha256
+`481cebda49bd1bb77658c04339a2a91a23fb196ba6336ec4261de179bc5f3cd6`) is at `data/recordings/server/recordings.sqlite`
+(gitignored). It also stays on the droplet. These windows came after S2 and aren't part of its sample. The laptop DB
+is unchanged.
+**Server trial result:** the first server windows (Nov 9 evening) were all clean, which confirms the move fixed the sleep problem.

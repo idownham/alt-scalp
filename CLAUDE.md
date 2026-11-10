@@ -10,15 +10,14 @@ evidence trail matter as much as the result. A well-evidenced "no edge" is a val
 
 ## Current stage
 **STOP at S2 (Ian confirmed 2026-11-09).** S2 gate failed on 196 counted clean games: median reversals 0, ≥ 3 needed
-(`docs/s2-results.md`, `docs/decisions.md`). S3 is not run. Whether the recorders keep running is an open owner decision. Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
+(`docs/s2-results.md`, `docs/decisions.md`). S3 is not run. **Recording stopped 2026-11-10 03:29 UTC** (server recorder and update timer disabled, laptop agent unloaded); server data archived to `data/recordings/server/recordings.sqlite`. Full plan: `docs/spec.md`. Timeline + game log: `docs/timeline.xlsx`.
 Update this line when the stage changes.
 
 ## Scope (decided by owner, 2026-10-13)
 - **Venue:** Kalshi only. (Polymarket's ~30 req/min per-IP limit is already used by alt-arb's scanner.)
 - **Leagues:** NFL, NBA (regular season only, starts 2026-10-20), NHL.
-- **Recorder host:** the shared droplet `alt-arb` since 2026-11-09 04:40 UTC (own user `altscalp`, `/opt/alt-scalp`,
-  systemd; HQ decision 2026-10-15). It shares an IP with Osprey's scanner and Slot Machine's recorder, so keep the
-  429 back-off and never call Polymarket. The laptop recorder is a backup until the first server game window is verified.
+- **Recorder host:** none since 2026-11-10 (stopped after STOP at S2). It ran on the shared droplet `alt-arb` from
+  2026-11-09 04:40 UTC (user `altscalp`, `/opt/alt-scalp`, units disabled, code left in place) and on the laptop before that.
 - **Sample:** 20 clean games, at least 5 per league.
 
 ## Hard rules
